@@ -14,12 +14,12 @@ class User(db.Model):
     favorites_plan: Mapped[list['FavPlanets']] = relationship(back_populates='users_p')
     favorites_star: Mapped[list['FavStarships']] = relationship(back_populates='users_s')
 
-
     def serialize(self):
         return {
-            "id": self.id,
-            "email": self.email,
+            'id': self.id,
+            'email': self.email,
             # do not serialize the password, its a security breach
+            'is_active': self.is_active,
         }
     
     def __repr__(self):
@@ -36,6 +36,14 @@ class Characters(db.Model):
 
     def __repr__(self):
         return f'{self.name}'
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'height': self.height,
+            'weight': self.weigth
+        }
 
 class FavCharacters(db.Model):
     __tablename__ = 'favorite_characters'
@@ -44,6 +52,9 @@ class FavCharacters(db.Model):
     users_c: Mapped['User'] = relationship(back_populates='favorites_char')
     character_id: Mapped[int] = mapped_column(ForeignKey('characters.id'))
     people: Mapped['Characters'] = relationship(back_populates='favorites_by_char')
+
+    def __repr__(self):
+        return f'Al usuario {self.user_id} le gusta el personaje {self.character_id}'
 
 class Planets(db.Model):
     __tablename__ = 'planets'
@@ -55,6 +66,14 @@ class Planets(db.Model):
 
     def __repr__(self):
         return f'{self.name}'
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'diameter': self.diameter,
+            'orbital_period': self.orbital_period
+        }
 
 class FavPlanets(db.Model):
     __tablename__ = 'favorite_planets'
@@ -63,6 +82,9 @@ class FavPlanets(db.Model):
     users_p: Mapped['User'] = relationship(back_populates='favorites_plan')
     planet_id: Mapped[int] = mapped_column(ForeignKey('planets.id'))
     astros: Mapped['Planets'] = relationship(back_populates='favorites_by_plan')
+
+    def __repr__(self):
+        return f'Al usuario {self.user_id} le gusta el personaje {self.planet_id}'
 
 class Starships(db.Model):
     __tablename__ = 'starships'
@@ -74,6 +96,14 @@ class Starships(db.Model):
 
     def __repr__(self):
         return f'{self.name}'
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'passengers': self.passengers,
+            'cargo_capacity': self.cargo_capacity
+        }
 
 class FavStarships(db.Model):
     __tablename__ = 'favorite_starships'
@@ -82,3 +112,6 @@ class FavStarships(db.Model):
     users_s: Mapped['User'] = relationship(back_populates='favorites_star')
     starship_id: Mapped[int] = mapped_column(ForeignKey('starships.id'))
     naves: Mapped['Starships'] = relationship(back_populates='favorites_by_star')
+
+    def __repr__(self):
+        return f'Al usuario {self.user_id} le gusta el personaje {self.starship_id}'
